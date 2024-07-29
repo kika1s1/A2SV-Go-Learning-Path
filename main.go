@@ -1,21 +1,21 @@
 package main
+
 import (
     "fmt"
+    "strings"
 )
-func main(){
-    // array and slices
-    // array is fixed size
-    // slice is dynamic size
-    // declare array
-    var ages [3]int = [3]int{1,2,3}
-    fmt.Println(ages, len(ages))
-    names :=[4]string{"kiya", "Tamirat", "you"}
-    fmt.Print(names)
-    fmt.Println(len(names))
-    scores := []int{1,2,3,4,5,6}
-    scores[0] = 1000
-    scores = append(scores, 43)
-    fmt.Println(scores[2])
 
-   
+func main() {
+    nums := [3]int{1,2,3}
+    greetings := "hello this is tamirat kebede"
+    fmt.Println(strings.Contains(greetings, "hello"))
+    fmt.Println(strings.ReplaceAll(greetings, "e", "*"))
+    fmt.Println(strings.ToUpper(greetings))
+    fmt.Println(greetings)
+    fmt.Println(strings.Index(greetings, "hello"))
+    fmt.Println(strings.Split(greetings, "l"))
+    fmt.Println(nums)
+    for i:=0; i < len(nums); i++{
+        fmt.Println(nums[i])
+    }
 }
