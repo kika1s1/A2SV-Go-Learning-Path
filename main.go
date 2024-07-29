@@ -14,6 +14,21 @@ import (
         // - fmt.Println("hello world")
         // - fmt.Print("hello world")
 func main(){
-    fmt.Print("Initial Go lang")
+    // fmt.Print("Initial Go lang")
     // this is just for format string or output code
+    // strings are double qoute
+    var nameOne string = "kebede"
+    // fmt.Print(nameOne)
+    var nameTwo = "kiya"
+    // fmt.Print(nameTwo)
+    // for future use
+    var nameThree string
+    nameThree = "Sena"
+    // fmt.Print(nameThree)
+    fmt.Print(nameOne, nameTwo, nameThree)
+    nameFive := "this is just shorthand "
+    fmt.Print(nameFive)
+
+    
+
 }
