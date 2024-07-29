@@ -17,18 +17,28 @@ func main(){
     // fmt.Print("Initial Go lang")
     // this is just for format string or output code
     // strings are double qoute
-    var nameOne string = "kebede"
+    // var nameOne string = "kebede"
     // fmt.Print(nameOne)
-    var nameTwo = "kiya"
+    // var nameTwo = "kiya"
     // fmt.Print(nameTwo)
     // for future use
-    var nameThree string
-    nameThree = "Sena"
+    // var nameThree string
+    // nameThree = "Sena"
     // fmt.Print(nameThree)
-    fmt.Print(nameOne, nameTwo, nameThree)
-    nameFive := "this is just shorthand "
-    fmt.Print(nameFive)
+    // fmt.Print(nameOne, nameTwo, nameThree)
+    // nameFive := "this is just shorthand "
+    // fmt.Print(nameFive)
 
-    
+    // working with numbers 
+    var ageOne int8 = 20
+    var ageTwo int16 = 32
+    ageThree := int32(40)
+    fmt.Println(ageOne, ageTwo, ageThree)
 
+    // variation of int types
+    var ageFour int64 = 64
+    var ageFive uint8 = 8
+    ageSix := uint16(16)
+    // unsigned integers positive integers only
+    fmt.Println(ageFour, ageFive, ageSix)
 }
