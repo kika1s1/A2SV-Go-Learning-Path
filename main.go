@@ -1,5 +1,9 @@
 package main
+import (
+    "fmt"
+)
 
 func main(){
-    print("Initial Go lang")
+    fmt.Print("Initial Go lang")
+    // this is just for format string or output code
 }
