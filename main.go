@@ -41,4 +41,10 @@ func main(){
     ageSix := uint16(16)
     // unsigned integers positive integers only
     fmt.Println(ageFour, ageFive, ageSix)
+
+    // float numbers
+    var floatOne float32 = 3.14
+    var floatTwo float64 = 6.28
+    floatThree := float32(9.87)
+    fmt.Println(floatOne, floatTwo, floatThree)
 }
