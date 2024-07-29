@@ -3,10 +3,11 @@ package main
 import (
     "fmt"
     "strings"
+    "sort" 
 )
 
 func main() {
-    nums := [3]int{1,2,3}
+    nums := []int{4,2,1,3,4,5,54,643}
     greetings := "hello this is tamirat kebede"
     fmt.Println(strings.Contains(greetings, "hello"))
     fmt.Println(strings.ReplaceAll(greetings, "e", "*"))
@@ -18,4 +19,7 @@ func main() {
     for i:=0; i < len(nums); i++{
         fmt.Println(nums[i])
     }
+    // nums.sort()
+    sort.Ints(nums)
+    fmt.Println(nums)
 }
