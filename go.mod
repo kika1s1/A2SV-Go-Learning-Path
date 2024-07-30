@@ -1,0 +1,3 @@
+module A2SV-GO-LEARNING-PATH
+
+go 1.22.5
