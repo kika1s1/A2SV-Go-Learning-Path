@@ -3,13 +3,16 @@ package main
 import "fmt"
 
 func main() {
-    a :=[]string{
-        "kebede",
-    }
-    a = append(a, "girma")
-    fmt.Print(a)
-    for i:=0; i <=10; i++{
-        fmt.Println(i)
+    i := 0
+    for i <= 10 {
+        if i % 2 == 1 {
+            fmt.Println(i)
+        }else if i == 4{
+            i++
+            continue
+        } else{
+            break
+        }
+        i++
     }
 }
-
