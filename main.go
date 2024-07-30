@@ -3,11 +3,9 @@ package main
 import "fmt"
 
 func main() {
-    // s := []int{}
-    var s []int
-    // fmt.Printf("%d \n", len(s))
-    if s == nil {
-        fmt.Println("Slice is nil")
-    }
+    a := make([] int, 5)
+    b := [5]int{}
+    fmt.Println(a) 
+    fmt.Println(b)
 }
 
