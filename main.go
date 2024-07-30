@@ -3,9 +3,13 @@ package main
 import "fmt"
 
 func main() {
-    a := make([] int, 5)
-    b := [5]int{}
-    fmt.Println(a) 
-    fmt.Println(b)
+    a :=[]string{
+        "kebede",
+    }
+    a = append(a, "girma")
+    fmt.Print(a)
+    for i:=0; i <=10; i++{
+        fmt.Println(i)
+    }
 }
 
