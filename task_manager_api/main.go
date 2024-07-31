@@ -1,13 +1,12 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/kika1s1/task_manager_api/routes"
+)
 
 func main() {
 	router := gin.Default()
-	router.GET("/ping", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	router.Run(":3000") // Listen and serve on 0.0.0.0:8080
+	routes.Routes(router)
+	router.Run(":3000")
 }
