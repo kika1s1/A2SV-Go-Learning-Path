@@ -31,6 +31,10 @@ api/
 ├── go.mod
 └── go.sum
 ```
+## Installation
+```
+go get -u github.com/gin-gonic/gin
+```
 ## Usage
 To run the application, use the following command:
 
