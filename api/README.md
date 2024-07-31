@@ -32,9 +32,19 @@ api/
 └── go.sum
 ```
 ## Installation
-```
-go get -u github.com/gin-gonic/gin
-```
+- ### Clone the repository:
+  ```plantext 
+  git clone https://github.com/kika1s1/A2SV-Go-Learning-Path/tree/main/api
+   
+  cd .
+  
+- ### Install the required Go modules:
+
+```go mod tidy```
+
+or
+
+```go get -u github.com/gin-gonic/gin```
 ## Usage
 To run the application, use the following command:
 
