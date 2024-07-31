@@ -41,9 +41,9 @@ To run the application, use the following command:
 ```
 go run main.go
 ```
-Follow the interactive prompts to:
+## Features 
 
-#### Add a New Album
+- #### Add a New Album
 Endpoint: POST /albums/create_album
 Request Body:
 ```json
@@ -55,7 +55,7 @@ Request Body:
 }
 ```
 
-#### Get All Albums
+- #### Get All Albums
 Endpoint: GET /albums
 Response:
 
@@ -94,7 +94,7 @@ Response:
 ]
 
 ```
-### Get Album by ID
+- ### Get Album by ID
 Endpoint: GET /albums/{id}
 Response:
 ```json
