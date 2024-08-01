@@ -127,19 +127,20 @@
      go mod init task_manager
   3. **Folder Structure**:
      
-  task_manager/
-  ├── main.go
-  ├── controllers/
-  │   └── task_controller.go
-  ├── models/
-  │   └── task.go
-  ├── data/
-  │   └── task_service.go
-  ├── router/
-  │   └── router.go
-  ├── docs/
-  │   └── api_documentation.md
-  └── go.mod
+ task_manager/
+├── main.go 
+├── controllers/
+│   └── task_controller.go
+├── models/
+│   └── task.go
+├── data/
+│   └── task_service.go
+├── router/
+│   └── router.go
+├── docs/
+│   └── api_documentation.md
+└── go.mod
+
   - **main.go:** Entry point of the application.
   - **controllers/task_controller.go:** Handles incoming HTTP requests.
   - models/task.go: Defines the Task struct.
