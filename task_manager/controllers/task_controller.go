@@ -78,5 +78,5 @@ func CreateTask(ctx *gin.Context) {
     }
 
     data.Tasks = append(data.Tasks, newTask)
-    ctx.JSON(http.StatusCreated, gin.H{"message": "Task created"})
+    ctx.JSON(http.StatusCreated, gin.H{"message": "Task created", "data":newTask})
 }
