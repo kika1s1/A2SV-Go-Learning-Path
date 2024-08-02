@@ -122,31 +122,40 @@
   1. **Install Go**: Ensure Go is installed on your system.
   2. **Setup Project**:
      ```sh
+     git clone https://github.com/kika1s1/A2SV-Go-Learning-Path.git
      mkdir task_manager
      cd task_manager
      go mod init task_manager
+     go mod tidy
+     touch .env
+        in .env
+          MONGO_URI = "mongodb://127.0.0.1:27017"
   3. **Folder Structure**:
      
-  task_manager/
-  ├── main.go
-  ├── controllers/
-  │   └── task_controller.go
-  ├── models/
-  │   └── task.go
-  ├── data/
-  │   └── task_service.go
-  ├── router/
-  │   └── router.go
-  ├── docs/
-  │   └── api_documentation.md
-  └── go.mod
+ task_manager/
+├── main.go 
+├── config 
+│   └── db.go
+├── controllers/
+│   └── task_controller.go
+├── models/
+│   └── task.go
+├── data/
+│   └── task_service.go
+├── router/
+│   └── router.go
+├── docs/
+│   └── api_documentation.md
+└── .env
+└── go.mod
+
   - **main.go:** Entry point of the application.
   - **controllers/task_controller.go:** Handles incoming HTTP requests.
-  - models/task.go: Defines the Task struct.
+  - **models/task.go:** Defines the Task struct.
   - ***data/task_service.go:*** Contains business logic and data manipulation functions.
   - ***router/router.go:*** Sets up the routes and initializes the Gin router.
   - ***docs/api_documentation.md:*** API documentation
-  4. **Run the Application**:
+  1. **Run the Application**:
   
       To run the application, open a terminal or command prompt and navigate to the `task_manager` directory. Then, execute the following command:
   
