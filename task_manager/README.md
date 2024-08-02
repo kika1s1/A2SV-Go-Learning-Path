@@ -132,7 +132,8 @@
           MONGO_URI = "mongodb://127.0.0.1:27017"
   3. **Folder Structure**:
      
- task_manager/
+```
+task_manager/
 ├── main.go 
 ├── config 
 │   └── db.go
@@ -148,6 +149,8 @@
 │   └── api_documentation.md
 └── .env
 └── go.mod
+```
+
 
   - **main.go:** Entry point of the application.
   - **controllers/task_controller.go:** Handles incoming HTTP requests.
