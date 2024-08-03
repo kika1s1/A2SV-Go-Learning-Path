@@ -1,15 +1,17 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/kika1s1/task_manager/router"
+	"log"
+	"net/http"
 	"github.com/kika1s1/task_manager/config"
+	"github.com/kika1s1/task_manager/router"
 )
 
 func main() {
 	config.ConnectDB()
 	defer config.DisconnectDB()
-	r := gin.Default()
-	router.SetRoutes(r)
-	r.Run(":3000") 
+		// Setup routes
+	r := router.SetupRouter()
+	// Start the server
+	log.Fatal(http.ListenAndServe(":3000", r))
 }
