@@ -137,5 +137,7 @@ func DeleteTask(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not delete task"})
 		return
 	}
-	c.JSON(http.StatusNoContent, nil)
+	c.JSON(http.StatusOK, gin.H{
+        "message":"task is deleted successfully",
+    })
 }
