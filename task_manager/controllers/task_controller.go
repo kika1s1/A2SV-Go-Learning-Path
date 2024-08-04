@@ -1,124 +1,133 @@
 package controllers
 
 import (
-	"context"
 	"net/http"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/kika1s1/task_manager/config"
+	"github.com/kika1s1/task_manager/data"
 	"github.com/kika1s1/task_manager/models"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func GetAllTasks(c *gin.Context){
-    var tasks []models.Task
-    collection := config.GetCollection("tasks")
-    cursor, err := collection.Find(context.Background(), bson.M{})
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    defer cursor.Close(context.Background())
-    for cursor.Next(context.Background()) {
-        var task models.Task
-        cursor.Decode(&task)
-        tasks = append(tasks, task)
-    }
+// Register handles user registration
+func Register(c *gin.Context) {
+	var user models.User
+	if err := c.BindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
 
-    c.JSON(http.StatusOK, tasks)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not hash password"})
+		return
+	}
+	user.Password = string(hashedPassword)
+
+	if err := data.CreateUser(user); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create user"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message":  "User created",
+		"username": user.Username,
+	})
 }
 
+// Login handles user login and returns JWT token
+func Login(c *gin.Context) {
+	var user models.User
+	if err := c.BindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
 
+	storedUser, err := data.GetUserByUsername(user.Username)
+	if err != nil || bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(user.Password)) != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
 
-func GetTask(c *gin.Context) {
-    idParam := c.Param("id")
-    objectID, err := primitive.ObjectIDFromHex(idParam)
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
-        return
-    }
-
-    var task models.Task
-    collection := config.GetCollection("tasks")
-    err = collection.FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&task)
-    if err != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
-        return
-    }
-
-    c.JSON(http.StatusOK, task)
+	token, err := GenerateJWT(storedUser.Username, storedUser.Role)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
-func UpdateTask(c *gin.Context) {
-    idParam := c.Param("id")
-    objectID, err := primitive.ObjectIDFromHex(idParam)
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
-        return
-    }
-
-    var updatedTask models.Task
-    err = c.BindJSON(&updatedTask)
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
-
-    collection := config.GetCollection("tasks")
-    opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-    result := collection.FindOneAndUpdate(context.Background(), bson.M{"_id": objectID}, bson.M{"$set": updatedTask}, opts)
-    if result.Err() != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
-        return
-    }
-
-    var updatedTaskResult models.Task
-    err = result.Decode(&updatedTaskResult)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-
-    c.JSON(http.StatusOK, updatedTaskResult)
+// GenerateJWT creates a new JWT token
+func GenerateJWT(username, role string) (string, error) {
+	claims := models.Claims{
+		Username: username,
+		Role:     role,
+		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte("your_secret_key"))
 }
 
-
-func DeleteTask(c *gin.Context) {
-    idParam := c.Param("id")
-    objectID, err := primitive.ObjectIDFromHex(idParam)
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
-        return
-    }
-
-    collection := config.GetCollection("tasks")
-    result, _ := collection.DeleteOne(context.Background(), bson.M{"_id": objectID})
-    if result.DeletedCount == 0 {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
-        return
-    }
-
-    c.JSON(http.StatusOK, gin.H{"message": "Task deleted"})
-}
-
+// CreateTask handles task creation
 func CreateTask(c *gin.Context) {
-    var newTask models.Task
-    err := c.BindJSON(&newTask)
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
+	var task models.Task
+	if err := c.BindJSON(&task); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
 
-    newTask.ID = primitive.NewObjectID()
+	if err := data.CreateTask(task); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create task"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Task created"})
+}
 
-    collection := config.GetCollection("tasks")
-    _, err = collection.InsertOne(context.Background(), newTask)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
+// GetTasks handles fetching all tasks
+func GetTasks(c *gin.Context) {
+	tasks, err := data.GetTasks()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch tasks"})
+		return
+	}
+	c.JSON(http.StatusOK, tasks)
+}
 
-    c.JSON(http.StatusCreated, newTask)
+// GetTaskByID handles fetching a single task by ID
+func GetTaskByID(c *gin.Context) {
+	id := c.Param("id")
+	task, err := data.GetTaskByID(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, task)
+}
+
+
+
+// UpdateTask handles updating a task
+func UpdateTask(c *gin.Context) {
+	var task models.Task
+	if err := c.BindJSON(&task); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	if err := data.UpdateTask(task); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not update task"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Task updated"})
+}
+
+// DeleteTask handles deleting a task
+func DeleteTask(c *gin.Context) {
+	id := c.Param("id")
+	if err := data.DeleteTask(id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not delete task"})
+		return
+	}
+	c.JSON(http.StatusNoContent, nil)
 }
