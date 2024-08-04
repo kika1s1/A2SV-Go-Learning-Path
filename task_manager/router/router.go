@@ -34,7 +34,7 @@ func SetupRouter(client *mongo.Client) *gin.Engine {
 
 	// Admin routes
 	adminMiddleware := middleware.AdminMiddleware()
-	r.DELETE("/tasks/:id/admin", adminMiddleware, controllers.DeleteTask)
+	r.DELETE("/tasks/:id/admin",authMiddleware, adminMiddleware, controllers.DeleteTask)
 
 	return r
 }

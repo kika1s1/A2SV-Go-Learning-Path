@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/kika1s1/task_manager/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -60,7 +61,19 @@ func UpdateTask(task models.Task) error {
 	return err
 }
 
+
 func DeleteTask(id string) error {
-	_, err := taskCollection.DeleteOne(context.Background(), bson.M{"_id": id})
-	return err
+	// Convert id string to ObjectID
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return fmt.Errorf("invalid task ID: %v", err)
+	}
+
+	// Attempt to delete the task
+	_, err = taskCollection.DeleteOne(context.Background(), bson.M{"_id": objectID})
+	if err != nil {
+		return fmt.Errorf("failed to delete task: %v", err)
+	}
+
+	return nil
 }
