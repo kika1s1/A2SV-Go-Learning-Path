@@ -1,11 +1,14 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/kika1s1/task_manager/data"
 	"github.com/kika1s1/task_manager/models"
 	"golang.org/x/crypto/bcrypt"
@@ -60,13 +63,18 @@ func Login(c *gin.Context) {
 
 // GenerateJWT creates a new JWT token
 func GenerateJWT(username, role string) (string, error) {
+    err := godotenv.Load(".env")
+    if err != nil{
+     log.Fatalf("Error loading .env file: %s", err)
+    }
+    JWT_SECRET := os.Getenv("JWT_SECRET")
 	claims := models.Claims{
 		Username: username,
 		Role:     role,
 		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte("your_secret_key"))
+	return token.SignedString([]byte(JWT_SECRET))
 }
 
 // CreateTask handles task creation
