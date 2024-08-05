@@ -6,6 +6,37 @@
   ## Requirements
   
   ### Endpoints
+
+  - **POST /register**
+    - Register a user
+    -  **POST /Response ** 
+       - status code: `201`
+       - Body: 
+            ```json
+            [
+               {
+                "id": 1,
+                "username":"admin",
+                "password":"admin",
+                "role": "admin",
+
+              }
+
+            ]  
+  - **POST /login**
+    - Login a user
+    -  **POST /Response** 
+       - status code: `201`
+       - Body: 
+            ```json
+            [
+               {
+                "username":"admin",
+                "password":"admin",
+
+              }
+
+            ]  
   
   - **GET /tasks**
     - Get a list of all tasks.
@@ -21,7 +52,6 @@
             "due_date": "2024-07-31T00:00:00Z",
             "status": "pending"
           },
-          ...
         ]
         ```
   
@@ -130,24 +160,29 @@
      touch .env
         in .env
           MONGO_URI = "mongodb://127.0.0.1:27017"
+          JWT_SECRET = "YOUR_JWT_SECRET"
   3. **Folder Structure**:
      
- task_manager/
+``` 
+task_manager/
 ├── main.go 
-├── config 
-│   └── db.go
+├── middleware/
+│   └── auth_middleware.go
 ├── controllers/
 │   └── task_controller.go
 ├── models/
 │   └── task.go
+│   └── user.go
 ├── data/
 │   └── task_service.go
+│   └── user_service.go
 ├── router/
 │   └── router.go
 ├── docs/
 │   └── api_documentation.md
 └── .env
 └── go.mod
+```
 
   - **main.go:** Entry point of the application.
   - **controllers/task_controller.go:** Handles incoming HTTP requests.
