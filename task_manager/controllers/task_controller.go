@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -25,7 +24,6 @@ func Register(c *gin.Context) {
 
 	// Check if username already exists
 	existingUser, err := data.GetUserByUsername(user.Username)
-	fmt.Println(existingUser)
 	if err == nil && existingUser != (models.User{}) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
 		return
@@ -101,7 +99,7 @@ func CreateTask(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create task"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Task created"})
+	c.JSON(http.StatusOK, gin.H{"message": "Task created",})
 }
 
 // GetTasks handles fetching all tasks
