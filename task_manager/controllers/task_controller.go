@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -22,6 +23,14 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	// Check if username already exists
+	existingUser, err := data.GetUserByUsername(user.Username)
+	fmt.Println(existingUser)
+	if err == nil && existingUser != (models.User{}) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
+		return
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not hash password"})
@@ -33,9 +42,12 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create user"})
 		return
 	}
+	
+
 	c.JSON(http.StatusOK, gin.H{
-		"message":  "User created",
-		"username": user.Username,
+		"message": "User created",
+		"username":    user.Username,
+		"role":    user.Role,
 	})
 }
 
@@ -63,14 +75,14 @@ func Login(c *gin.Context) {
 
 // GenerateJWT creates a new JWT token
 func GenerateJWT(username, role string) (string, error) {
-    err := godotenv.Load(".env")
-    if err != nil{
-     log.Fatalf("Error loading .env file: %s", err)
-    }
-    JWT_SECRET := os.Getenv("JWT_SECRET")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+	JWT_SECRET := os.Getenv("JWT_SECRET")
 	claims := models.Claims{
-		Username: username,
-		Role:     role,
+		Username:  username,
+		Role:      role,
 		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -113,8 +125,6 @@ func GetTaskByID(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-
-
 // UpdateTask handles updating a task
 func UpdateTask(c *gin.Context) {
 	var task models.Task
@@ -138,6 +148,6 @@ func DeleteTask(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-        "message":"task is deleted successfully",
-    })
+		"message": "task is deleted successfully",
+	})
 }
