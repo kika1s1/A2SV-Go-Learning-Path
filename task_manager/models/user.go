@@ -5,12 +5,12 @@ import "github.com/dgrijalva/jwt-go"
 type User struct {
 	Username string `bson:"username" json:"username"`
 	Password string `bson:"password" json:"password"`
-	Role     string `bson:"role" json:"role"`
+	IsAdmin     bool `bson:"isAdmin" json:"isAdmin"`
 }
 
 type Claims struct {
 	Username string `json:"username"`
-	Role     string `json:"role"`
+	IsAdmin     bool `json:"isAdmin"`
 	jwt.StandardClaims
 	ExpiresAt int64  `json:"expiresAt"`
 }

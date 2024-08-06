@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -48,14 +49,14 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		c.Set("user", claims)
+		c.Set("isAdmin", claims)
 		c.Next()
 	}
 }
 
 func AdminMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user, exists := c.Get("user")
+		user, exists := c.Get("isAdmin")
 		if !exists {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
@@ -63,7 +64,8 @@ func AdminMiddleware() gin.HandlerFunc {
 		}
 
 		claims, ok := user.(*models.Claims)
-		if !ok || claims.Role != "admin" {
+		fmt.Println(claims.IsAdmin)
+		if !ok || !claims.IsAdmin  {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
 			c.Abort()
 			return

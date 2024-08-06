@@ -33,3 +33,7 @@ func HashPassword(password string) (string, error) {
 func ComparePassword(hashedPassword, password string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)) == nil
 }
+func Promote(username string)  error {
+	_, err := userCollection.UpdateOne(context.Background(), bson.M{"username": username}, bson.M{"$set": bson.M{"isAdmin": true}})
+	return err
+}

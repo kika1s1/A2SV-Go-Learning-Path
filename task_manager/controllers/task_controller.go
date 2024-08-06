@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -35,8 +36,10 @@ func Register(c *gin.Context) {
 		return
 	}
 	user.Password = string(hashedPassword)
+	
 
-	if err := data.CreateUser(user); err != nil {
+	err = data.CreateUser(user); 
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create user"})
 		return
 	}
@@ -45,7 +48,7 @@ func Register(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "User created",
 		"username":    user.Username,
-		"role":    user.Role,
+		"role":    user.IsAdmin,
 	})
 }
 
@@ -59,11 +62,12 @@ func Login(c *gin.Context) {
 
 	storedUser, err := data.GetUserByUsername(user.Username)
 	if err != nil || bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(user.Password)) != nil {
+		fmt.Println()
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
 
-	token, err := GenerateJWT(storedUser.Username, storedUser.Role)
+	token, err := GenerateJWT(storedUser.Username, storedUser.IsAdmin)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
 		return
@@ -72,7 +76,7 @@ func Login(c *gin.Context) {
 }
 
 // GenerateJWT creates a new JWT token
-func GenerateJWT(username, role string) (string, error) {
+func GenerateJWT(username string, isAdmin bool) (string, error) {
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %s", err)
@@ -80,13 +84,23 @@ func GenerateJWT(username, role string) (string, error) {
 	JWT_SECRET := os.Getenv("JWT_SECRET")
 	claims := models.Claims{
 		Username:  username,
-		Role:      role,
+		IsAdmin:      isAdmin,
 		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(JWT_SECRET))
 }
-
+// Promote admin role
+func Promote(c *gin.Context) {
+	username := c.Param("username")
+	if err := data.Promote(username); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not promote user"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User is promoted Admin successfully",
+	})
+}
 // CreateTask handles task creation
 func CreateTask(c *gin.Context) {
 	var task models.Task
