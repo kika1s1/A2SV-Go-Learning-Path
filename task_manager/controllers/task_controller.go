@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -27,6 +28,12 @@ func Register(c *gin.Context) {
     existingUser, err := data.GetUserByUsername(user.Username)
     if err == nil && existingUser != (models.User{}) {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
+        return
+    }
+
+    // Check password hardness
+    if err := checkPasswordHardness(user.Password); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
 
@@ -58,9 +65,39 @@ func Register(c *gin.Context) {
     c.JSON(http.StatusOK, gin.H{
         "message":  "User created",
         "username": user.Username,
-        "isAdmin":     user.IsAdmin,
+        "isAdmin":  user.IsAdmin,
     })
 }
+
+// checkPasswordHardness checks if the password meets the required hardness criteria using regex
+func checkPasswordHardness(password string) error {
+    var (
+        minLen    = regexp.MustCompile(`.{8,}`)
+        upperCase = regexp.MustCompile(`[A-Z]`)
+        lowerCase = regexp.MustCompile(`[a-z]`)
+        number    = regexp.MustCompile(`[0-9]`)
+        special   = regexp.MustCompile(`[!@#\$%\^&\*\(\)_\+\-=\[\]\{\};:'",.<>?\\|/~` + "`" + `]`)
+    )
+
+    if !minLen.MatchString(password) {
+        return fmt.Errorf("password must be at least 8 characters long")
+    }
+    if !upperCase.MatchString(password) {
+        return fmt.Errorf("password must contain at least one uppercase letter")
+    }
+    if !lowerCase.MatchString(password) {
+        return fmt.Errorf("password must contain at least one lowercase letter")
+    }
+    if !number.MatchString(password) {
+        return fmt.Errorf("password must contain at least one number")
+    }
+    if !special.MatchString(password) {
+        return fmt.Errorf("password must contain at least one special character")
+    }
+
+    return nil
+}
+
 // Login handles user login and returns JWT token
 func Login(c *gin.Context) {
 	var user models.User
