@@ -27,15 +27,17 @@ func SetupRouter(client *mongo.Client) *gin.Engine {
 	// Auth middleware
 	authMiddleware := middleware.AuthMiddleware()
 	// Task routes
-	r.POST("/tasks", authMiddleware, controllers.CreateTask)
 	r.GET("/tasks", authMiddleware, controllers.GetTasks)
 	r.PUT("/tasks/:id", authMiddleware, controllers.UpdateTask)
 	r.GET("/tasks/:id", authMiddleware, controllers.GetTaskByID)
-	r.DELETE("/tasks/:id", authMiddleware, controllers.DeleteTask)
 
 	// Admin routes
 	adminMiddleware := middleware.AdminMiddleware()
 	r.PUT("/promote/:username",authMiddleware, adminMiddleware, controllers.Promote)
+	r.DELETE("/tasks/:id", authMiddleware,adminMiddleware, controllers.DeleteTask)
+	r.POST("/tasks", authMiddleware,adminMiddleware, controllers.CreateTask)
+
+
 
 	return r
 }

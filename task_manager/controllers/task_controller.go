@@ -17,41 +17,50 @@ import (
 
 // Register handles user registration
 func Register(c *gin.Context) {
-	var user models.User
-	if err := c.BindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-		return
-	}
+    var user models.User
+    if err := c.BindJSON(&user); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+        return
+    }
 
-	// Check if username already exists
-	existingUser, err := data.GetUserByUsername(user.Username)
-	if err == nil && existingUser != (models.User{}) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
-		return
-	}
+    // Check if username already exists
+    existingUser, err := data.GetUserByUsername(user.Username)
+    if err == nil && existingUser != (models.User{}) {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
+        return
+    }
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not hash password"})
-		return
-	}
-	user.Password = string(hashedPassword)
-	
+    // Check if there are any users in the database
+    userCount, err := data.GetUserCount()
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not check user count"})
+        return
+    }
 
-	err = data.CreateUser(user); 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create user"})
-		return
-	}
-	
+    // If no users exist, set the new user as an admin
+    if userCount == 0 {
+        user.IsAdmin = true
+    }
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "User created",
-		"username":    user.Username,
-		"role":    user.IsAdmin,
-	})
+    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not hash password"})
+        return
+    }
+    user.Password = string(hashedPassword)
+
+    err = data.CreateUser(user)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create user"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{
+        "message":  "User created",
+        "username": user.Username,
+        "isAdmin":     user.IsAdmin,
+    })
 }
-
 // Login handles user login and returns JWT token
 func Login(c *gin.Context) {
 	var user models.User

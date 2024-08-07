@@ -2,6 +2,8 @@ package data
 
 import (
 	"context"
+	"time"
+
 	"github.com/kika1s1/task_manager/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,6 +19,17 @@ func InitUserCollection(client *mongo.Client) {
 func CreateUser(user models.User) error {
 	_, err := userCollection.InsertOne(context.Background(), user)
 	return err
+}
+// GetUserCount returns the number of users in the database
+func GetUserCount() (int64, error) {
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+
+    count, err := userCollection.CountDocuments(ctx, bson.M{})
+    if err != nil {
+        return 0, err
+    }
+    return count, nil
 }
 
 func GetUserByUsername(username string) (models.User, error) {
