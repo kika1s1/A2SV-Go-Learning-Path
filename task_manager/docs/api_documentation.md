@@ -6,8 +6,9 @@
   ## Requirements
   
   ### Endpoints
-
+  
   - **POST /register**
+  - **@Public end point**
     - Register a user
     -  **POST /Response ** 
        - status code: `201`
@@ -24,6 +25,7 @@
 
             ]  
   - **POST /login**
+    - **@Public end point**
     - Login a user
     -  **POST /Response** 
        - status code: `201`
@@ -39,6 +41,7 @@
             ]  
   
   - **GET /tasks**
+  - **@Public end point**
     - Get a list of all tasks.
     - **Response**: 
       - Status: `200 OK`
@@ -56,6 +59,7 @@
         ```
   
   - **GET /tasks/:id**
+  - **@Public end point**
     - Get the details of a specific task.
     - **Response**: 
       - Status: `200 OK`
@@ -71,6 +75,7 @@
         ```
   
   - **POST /tasks**
+  - **@Protected end point**
     - Create a new task.
     - **Request**:
       - Body:
@@ -96,6 +101,7 @@
         ```
   
   - **PUT /tasks/:id**
+  - **@Protected end point**
     - Update a specific task.
     - **Request**:
       - Body:
@@ -121,9 +127,18 @@
         ```
   
   - **DELETE /tasks/:id**
+  - **@Protected end point**
     - Delete a specific task.
     - **Response**: 
       - Status: `204 No Content`
+  - **PROMOTE /promote/:username**
+  -  **Response**:
+  -  Status: `200 Ok`
+    ```json
+    {
+    "message": "User is promoted Admin successfully"
+    }
+    ```
   
   ### Error Handling
   
@@ -160,7 +175,7 @@
      touch .env
         in .env
           MONGO_URI = "mongodb://127.0.0.1:27017"
-          JWT_SECRET = "YOUR_JWT_SECRET"
+          JWT_SECRET = "your secret" //example jhdkdiwlkhfiuwkhf
   3. **Folder Structure**:
      
 ``` 
